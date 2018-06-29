@@ -13,6 +13,8 @@ fprintf('calling dat2gmsh\n');
 fprintf('calling gmsh\n');
 % may require sudo for encrypted hard drives
 !gmsh airfoil.dat.geo -2 -o airfoil.mesh
+% refine mesh
+!gmsh gmsh_refine -
 
 %% Convert Mesh
 tic;
