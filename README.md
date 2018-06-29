@@ -4,4 +4,4 @@ Data supporting paper submission titled Active Subspaces of Airfoil shape Parame
 https://github.com/paulcon/active_subspaces
 
 Thank you,
-z grey
+Zach Grey
