@@ -19,7 +19,7 @@ dv = fminunc(@(dv) coord_obj(l,dv), [-0.2*ones(1,m/2), 0.2*ones(1,m/2)]);
 
 %% Random Perturbation from Hypercube
 % Sample uniform hypercube:
-N = 250; rng(47);
+N = 1000; rng(47);
 
 % Define upper and lower bounds
 pct = 0.2;

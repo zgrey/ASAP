@@ -24,18 +24,18 @@ TT = 25; tt = linspace(0,1,TT);
 % Index set (columns are sweep indices, rows are point indices in sweep)
 I = reshape(linspace(1,N*T,N*T)',T,N);
 fig1 = figure; hold on; fig2 = figure; hold on; fig3 = figure; hold on; fig4 = figure; hold on;
-filename = 'sweeps.gif';
+filename = ['./sweeps/sweeps_m',num2str(m),'_N',num2str(N*T),'.gif'];
 for i=1:N
     % Euclidean distance
     d = cumsum([0; sqrt(sum((X(I(2:end,i),:)-X(I(1:end-1,i),:)).^2,2))]);
     % Euclidean distance plot
     figure(fig1);
     plot(d,F(I(:,i)),'o-');
-    text(d,F(I(:,i)),num2str(I(:,i)));
+%     text(d,F(I(:,i)),num2str(I(:,i)));
     % parametric distance plot
     figure(fig2);
     plot(t,F(I(:,i)),'o-');
-    text(t,F(I(:,i)),num2str(I(:,i)));
+%     text(t,F(I(:,i)),num2str(I(:,i)));
     % projection over longest length
     w = 2*ones(m,1); w = w/norm(w);
     % plot projection
@@ -43,41 +43,34 @@ for i=1:N
     plot(X(I(:,i),:)*w,F(I(:,i)),'o-');
 %     text(X0(I(:,i),:)*w,F(I(:,i)),num2str(I(:,i)));
     %% plot geometry over sweeps
-%     % build finer convex combinations    
-%     XX0 = kron(X0(I(1,i),:)',(1-tt))' + kron(X0(I(end,i),:)',tt)';
-%     % build spline of sweep
-%     spl = pchip(X0(I(:,i),:)*w,F(I(:,i)));
-%     % build figure
-%     figure(fig4);
-%     subplot(2,1,1), plot(X0(I(:,i),:)*w,F(I(:,i)),'k.-','MarkerSize',8); hold on;
-%     text(X0(I(:,i),:)*w,F(I(:,i)),num2str(I(:,i)));
-%     for ii=1:TT
-%         [s,~,M] = nasa_nozzle(linspace(0,10,100),[XX0(ii,1:3)'.^2*pi; XX0(ii,4)],0);
-%         % compute aspect ratio of convex cells
-%         r = sqrt(s(1:2:end)/pi); AR = repmat(100./(99*r'),1,5);
-%         dx = max(diff(M(:,1))); dMy = diff(reshape(M(:,2),50,5)); dy = repmat(dMy(1:5:end,:),5,1);
-%         % sweep plot
-%         subplot(2,1,1), h = scatter(XX0(ii,:)*w,ppval(spl,XX0(ii,:)*w),50,'filled','r');
-%         % nozzle plots
-%         subplot(2,1,2), h6 = surf(M(1:5:end,1),M(:,2),dy/dx); view([0,0,1]); shading interp; colorbar; caxis([1,10]);
-% %         subplot(2,1,2), h6 = surf(reshape(M(:,1),50,5),reshape(M(:,2),50,5),dy/dx); view([0,0,1]); shading interp; colorbar;
-% %         subplot(2,1,2), h6 = scatter(reshape(M(:,1),50,5),reshape(M(:,2),50,5),100,'cdata',dy/dx);
-%         subplot(2,1,2), hh = plot(linspace(0,10,100),sqrt(s/pi),'k-','linewidth',2); hold on; axis equal; axis([0,10,-xu(1),xu(1)]);
-%         subplot(2,1,2), hhh = plot(linspace(0,10,100),-sqrt(s/pi),'k-','linewidth',2);
-% %         subplot(2,1,2), hhhh = plot(reshape(M(:,1),50,5),reshape(M(:,2),50,5),'k.');
-%         subplot(2,1,2), hhhhh = plot(reshape(M(:,1),50,5),-reshape(M(:,2),50,5),'k.'); fig4.CurrentAxes.Visible = 'off';        
-%         % hollywood shit
-%         frame = getframe(fig4);
-%         [A,map] = rgb2ind(frame2im(frame),256);
-%         if i*ii == 1
-%             imwrite(A,map,filename,'gif','LoopCount',Inf,'DelayTime',0.1);
-%         else
-%             imwrite(A,map,filename,'gif','WriteMode','append','DelayTime',0.1);
-%         end
-%         % delete plots
-%         delete(h); delete(hh); delete(hhh); delete(hhhh); delete(hhhhh);
-%         delete(h6);
-%     end
+    % build finer convex combinations    
+    XX = kron(X(I(1,i),:)',(1-tt))' + kron(X(I(end,i),:)',tt)';
+    XX0 = bsxfun(@plus,lb0,bsxfun(@times,ub0-lb0,0.5*(XX+1)));
+    % build spline of sweep
+    spl = pchip(X(I(:,i),:)*w,F(I(:,i)));
+    % build figure
+    figure(fig4);
+    subplot(2,1,1), plot(X(I(:,i),:)*w,F(I(:,i)),'k.-','MarkerSize',8); hold on;
+%     text(X(I(:,i),:)*w,F(I(:,i)),num2str(I(:,i)));
+    for ii=1:TT
+        % generate refined airfoil over sweep
+        [coordU,coordL] = CST_airfoil(l',XX0(ii,1:m/2),XX0(ii,m/2+1:m),0);
+        % sweep plot
+        subplot(2,1,1), h1 = scatter(XX(ii,:)*w,ppval(spl,XX(ii,:)*w),50,'filled','r');
+        % nozzle plots
+        subplot(2,1,2), h2 = plot(l,coordU(2,:),'b','LineWidth',2); hold on; 
+        subplot(2,1,2), h3 = plot(l,coordL(2,:),'b','LineWidth',2); axis equal;        
+        % build gif
+        frame = getframe(fig4);
+        [A,map] = rgb2ind(frame2im(frame),256);
+        if i*ii == 1
+            imwrite(A,map,filename,'gif','LoopCount',Inf,'DelayTime',0.1);
+        else
+            imwrite(A,map,filename,'gif','WriteMode','append','DelayTime',0.1);
+        end
+        % delete plots
+        delete([h1,h2,h3]);
+    end
 end
 % string for legend
 sweepstr = [repmat('sweep-',N,1),num2str((1:N)')];

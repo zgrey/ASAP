@@ -1,7 +1,5 @@
 Merge "./airfoil.dat.geo";
 Mesh 2;
-SetOrder 2;
 RefineMesh;
-SetOrder 2;
 Save Sprintf("airfoil.mesh");
 

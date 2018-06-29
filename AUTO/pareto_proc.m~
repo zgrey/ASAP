@@ -1,10 +1,5 @@
 % Pareto processing routines
 %% Load AS Matlab Environment
-addpath '~/RESEARCH/active_subspaces/matlab/'
-addpath '~/RESEARCH/active_subspaces/matlab/Subspaces'
-addpath '~/RESEARCH/active_subspaces/matlab/ResponseSurfaces'
-addpath '~/RESEARCH/active_subspaces/matlab/Plotters'
-warning('off','MATLAB:dispatcher:pathWarning')
 addpath './paretopoints'
 
 %% Load designs workspace
@@ -42,8 +37,10 @@ CD.W   = AS.sub.W1; CL.W = AS.sub.W1;
 Yk = AS.X(rowi,:)*AS.sub.W1;
 
 %% Find extremals
-[~,CD.I] = min(CD.F); [~,CL.I] = max(CL.F);
-CD.y = AS.X(CD.I,:)*AS.sub.W1; CL.y = AS.X(CL.I,:)*AS.sub.W1;
+[~,CD.I] = min(CD.F);
+[~,CL.I] = max(CL.F);
+CD.y     = AS.X(CD.I,:)*AS.sub.W1;
+CL.y     = AS.X(CL.I,:)*AS.sub.W1;
 
 %% Lift summary
 AS.F = CL.F;
@@ -59,6 +56,16 @@ grid off; axis equal;
 
 %% Drag summary
 AS.F = CD.F;
+% Eigenvectors
+opts.markersize = 10;
+eigenvectors(AS.sub.W1,opts);
+
+% Subspace Errors
+% subspace_errors(AS.sub.sub_br,opts);
+
+% Plot eigenvalue decay
+eigenvalues(AS.sub.eigenvalues,AS.sub.e_br,opts);
+grid on
 
 % Summary plot
 opts.ylabel = 'QoI';
@@ -97,3 +104,12 @@ CL.P = poly_predict(p,CL.coef,CL.q);
 
 plot(CD.P,CL.P,'Linewidth',2,'color',[0,0.447,0.741]); hold on
 scatter(Pk(:,1),-Pk(:,2),'k.');
+%% 
+i = 1;
+Y = X*CL.W(:,:,i); [~,zi] = min(Y(:,2)); yp     = Y(zi,:);
+p = [t'*yp + (1-t)'*CD.y{i}; t'*CL.y{i} + (1-t)'*yp];
+CD.cp{i} = poly_predict(p,poly_train(X*CD.W(:,:,i),CD.F{i},2),CD.q);
+CL.cp{i} = poly_predict(p,poly_train(X*CD.W(:,:,i),CL.F{i},1),CL.q);
+figure(1); hold on
+% plot(CD.cp{i},CL.cp{i},'Linewidth',2,'color',[0,0.447,0.741]); 
+Pk = P{i}; scatter(Pk(:,1),Pk(:,2),'k.');
