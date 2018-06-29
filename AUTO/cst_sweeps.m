@@ -1,5 +1,5 @@
 %% A wrapper script for generating CST airfoil samples and SU2 meshes
-clc; close all; clearvars; addpath './CST_airfoil';
+clc; close all; clearvars;
 
 %% Discretize airfoil domain
 np = 250; l = [linspace(0,0.005,50),linspace(0.005+.005/50,1,np)];
@@ -11,7 +11,7 @@ m = 10;
 % optimize to find nominal values
 dv = fminunc(@(dv) coord_obj(l,dv), [-0.2*ones(1,m/2), 0.2*ones(1,m/2)]);
 % compute coordinates for optimal coefficients
-[coordU0, coordL0] = CST_airfoil(l',dv(1:m/2)',dv(m/2+1:end)',0);
+[coordU0, coordL0] = cst_airfoil(l',dv(1:m/2)',dv(m/2+1:end)',0);
 % plot Nominal Airfoil
 plot(l,coordU0(2,:),'LineWidth',2,'color',0.75*ones(3,1)); hold on;
 plot(l,coordL0(2,:),'LineWidth',2,'color',0.75*ones(3,1)); axis equal;
@@ -44,7 +44,7 @@ NF = 0; IP = zeros(N*T,1);
 max_thk = zeros(N*T,1); I_maxthk = max_thk; L1 = zeros(N*T,1);
 for i=1:N*T
     % Evaluate CST
-    [coordU, coordL] = CST_airfoil(l',X0(i,(1:m/2)),X0(i,(m/2+1:end)),0);
+    [coordU, coordL] = cst_airfoil(l',X0(i,(1:m/2)),X0(i,(m/2+1:end)),0);
     % common engineering airfoil metrics
     [max_thk(i), I_maxthk(i)] = max(coordU(2,:)-coordL(2,:));
     L1(i) = mean(abs(coordU(2,:) + coordL(2,:)));
@@ -52,9 +52,9 @@ for i=1:N*T
     if min(coordU(2,:)-coordL(2,:)) >= -1e-3
         IP(i) = 1;
         %  verify perturbations with plots
-%         h1 = plot(l,coordU(2,:),'k--','LineWidth',2); h2 = plot(l,coordL(2,:),'k--','LineWidth',2);
-%         title(['Example Nominal Airfoil Shape',' & Pert i = ',num2str(i)])
-%         pause(0.25); delete([h1,h2]);
+        h1 = plot(l,coordU(2,:),'k--','LineWidth',2); h2 = plot(l,coordL(2,:),'k--','LineWidth',2);
+        title(['Example Nominal Airfoil Shape',' & Pert i = ',num2str(i)])
+        pause(0.25); delete([h1,h2]);
     else
         NF = NF + 1;
         scatter([l,l],[coordU(2,:), coordL(2,:)],'r.'); axis equal;
@@ -71,7 +71,7 @@ X  =  X(IP,:); X0 =  X0(IP,:);
 for i=1:( (N*T)-NF )
     
     % Evaluate CST
-    [coordU, coordL] = CST_airfoil(l',X0(i,(1:length(dv)/2)),X0(i,(length(dv)/2+1:end)),0);
+    [coordU, coordL] = cst_airfoil(l',X0(i,(1:length(dv)/2)),X0(i,(length(dv)/2+1:end)),0);
     % run meshing routines
     mesh_coords(coordU,coordL,i,N*T,NF);
     
