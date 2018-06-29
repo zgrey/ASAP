@@ -9,7 +9,7 @@ np = 250; l = [linspace(0,0.005,50),linspace(0.005+.005/50,1,np)];
 m = 10;
 % dv(1:m/2) correspond to lower surface coefficients, dv(m/2+1:m) are upper surface coefficients
 % optimize to find nominal values
-dv = fminunc(@(dv) coord_obj(l,dv), [-0.2*ones(m/2,1); 0.2*ones(m/2,1)]);
+dv = fminunc(@(dv) coord_obj(l,dv), [-0.2*ones(1,m/2), 0.2*ones(1,m/2)]);
 % compute coordinates for optimal coefficients
 [coordU0, coordL0] = CST_airfoil(l',dv(1:m/2)',dv(m/2+1:end)',0);
 % plot Nominal Airfoil
@@ -26,9 +26,9 @@ T = 50; t = linspace(0,1,T);
 % Define upper and lower bounds
 pct = 0.2;
 % lower surface
-lb0(1:m/2) = (1+pct)*dv(1:m/2)'; ub0(1:m/2) = (1-pct)*dv(1:m/2)';
+lb0(1:m/2) = (1+pct)*dv(1:m/2); ub0(1:m/2) = (1-pct)*dv(1:m/2);
 % upper surface
-ub0(m/2+1:m) = (1+pct)*dv(m/2+1:end)'; lb0(m/2+1:m) = (1-pct)*dv(m/2+1:end)';
+ub0(m/2+1:m) = (1+pct)*dv(m/2+1:end); lb0(m/2+1:m) = (1-pct)*dv(m/2+1:end);
 
 % random samples from [-1,1] hypercube
 X = 2*rand(2*N,m) - 1;
@@ -77,4 +77,4 @@ for i=1:( (N*T)-NF )
     
 end
 %% Save sweeps workspace
-save(['./sweeps/','sweeps_',num2str(N*T),'_m',num2str(m),'.mat'],'X','X0','NF','IP','lb0','ub0','l','max_thk','I_maxthk','L1','N','T','t');
+save(['./sweeps/','sweeps_m',num2str(m),'_N',num2str(N*T),'.mat'],'X','X0','NF','IP','lb0','ub0','l','max_thk','I_maxthk','L1','N','T','t');

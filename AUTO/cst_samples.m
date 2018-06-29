@@ -9,7 +9,7 @@ nl = 250; l = [linspace(0,0.005,50),linspace(0.005+.005/50,1,nl)];
 m = 10;
 % dv(1:m/2) correspond to lower surface coefficients, dv(m/2+1:m) are upper surface coefficients
 % optimize to find nominal values
-dv = fminunc(@(dv) coord_obj(l,dv), [-0.2*ones(m/2,1); 0.2*ones(m/2,1)]);
+dv = fminunc(@(dv) coord_obj(l,dv), [-0.2*ones(1,m/2), 0.2*ones(1,m/2)]);
 % compute coordinates for optimal coefficients
 [coordU0, coordL0] = CST_airfoil(l',dv(1:m/2)',dv(m/2+1:end)',0);
 % plot Nominal Airfoil
@@ -19,14 +19,14 @@ title 'Example Nominal Airfoil Shape'
 
 %% Random Perturbation from Hypercube
 % Sample uniform hypercube:
-NN = 250; rng(47);
+N = 250; rng(47);
 
 % Define upper and lower bounds
 pct = 0.2;
 % lower surface
-lb0(1:m/2) = (1+pct)*dv(1:m/2)'; ub0(1:m/2) = (1-pct)*dv(1:m/2)';
+lb0(1:m/2) = (1+pct)*dv(1:m/2)'; ub0(1:m/2) = (1-pct)*dv(1:m/2);
 % upper surface
-ub0(m/2+1:m) = (1+pct)*dv(m/2+1:end)'; lb0(m/2+1:m) = (1-pct)*dv(m/2+1:end)';
+ub0(m/2+1:m) = (1+pct)*dv(m/2+1:end)'; lb0(m/2+1:m) = (1-pct)*dv(m/2+1:end);
 
 % print bounds
 disp('----- Parameter Bounds -----')
@@ -35,14 +35,14 @@ disp([['a1 ';'a2 ';'a3 ';'a4 ';'a5 ';'a6 ';'a7 ';'a8 ';'a9 ';'a10',], ...
     [' ';' ';' ';' ';' ';' ';' ';' ';' ';' '],num2str(lb0'), ...
     [' ';' ';' ';' ';' ';' ';' ';' ';' ';' '],num2str(ub0')]);
 
-X = 2*rand(NN,length(dv))-1;
+X = 2*rand(N,length(dv))-1;
 X0 = bsxfun(@plus,lb0,bsxfun(@times,ub0-lb0,0.5*(X+1)));
 
 % initialize admissible set count and indices
-NF = 0; IP = zeros(NN,1);
+NF = 0; IP = zeros(N,1);
 % initialize thickness metric
-max_thk = zeros(NN,1); I_maxthk = max_thk; L1 = zeros(NN,1);
-for i=1:NN
+max_thk = zeros(N,1); I_maxthk = max_thk; L1 = zeros(N,1);
+for i=1:N
     % Evaluate CST
     [coordU, coordL] = CST_airfoil(l',X0(i,(1:length(dv)/2)),X0(i,(length(dv)/2+1:end)),0);
     % common engineering airfoil metrics
@@ -68,12 +68,12 @@ disp(['Number of feasible designs: ',num2str(sum(IP))])
 X  =  X(IP,:); X0 =  X0(IP,:);
 
 %% Generate Meshes
-for i=1:NN-NF
+for i=1:N-NF
     
     % Evaluate CST
     [coordU, coordL] = CST_airfoil(l',X0(i,(1:length(dv)/2)),X0(i,(length(dv)/2+1:end)),0);    
-    mesh_coords(coordU,coordL,i,NN,NF);
+    mesh_coords(coordU,coordL,i,N,NF);
     
 end
 %% Save design workspace
-save(['./designs/','designs_',num2str(NN),'.mat'],'X','X0','NF','IP','lb0','ub0','l','max_thk','I_maxthk','L1');
+save(['./designs/','designs_m',num2str(m),'_N',num2str(N),'.mat'],'X','X0','NF','IP','lb0','ub0','l','max_thk','I_maxthk','L1');
