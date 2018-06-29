@@ -19,7 +19,7 @@ title 'Example Nominal Airfoil Shape'
 
 %% Random sweeps
 % number of sweeps
-N = 5;
+N = 10;
 % number of points over sweep
 T = 50; t = linspace(0,1,T);
 
