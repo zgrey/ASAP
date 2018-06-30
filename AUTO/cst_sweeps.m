@@ -13,9 +13,9 @@ dv = fminunc(@(dv) coord_obj(l,dv), [-0.2*ones(1,m/2), 0.2*ones(1,m/2)]);
 % compute coordinates for optimal coefficients
 [coordU0, coordL0] = cst_airfoil(l',dv(1:m/2)',dv(m/2+1:end)',0);
 % plot Nominal Airfoil
-plot(l,coordU0(2,:),'LineWidth',2,'color',0.75*ones(3,1)); hold on;
-plot(l,coordL0(2,:),'LineWidth',2,'color',0.75*ones(3,1)); axis equal;
-title 'Example Nominal Airfoil Shape'
+% plot(l,coordU0(2,:),'LineWidth',2,'color',0.75*ones(3,1)); hold on;
+% plot(l,coordL0(2,:),'LineWidth',2,'color',0.75*ones(3,1)); axis equal;
+% title 'Example Nominal Airfoil Shape'
 
 %% Random sweeps
 % number of sweeps
@@ -52,9 +52,9 @@ for i=1:N*T
     if min(coordU(2,:)-coordL(2,:)) >= -1e-3
         IP(i) = 1;
         %  verify perturbations with plots
-        h1 = plot(l,coordU(2,:),'k--','LineWidth',2); h2 = plot(l,coordL(2,:),'k--','LineWidth',2);
-        title(['Example Nominal Airfoil Shape',' & Pert i = ',num2str(i)])
-        pause(0.25); delete([h1,h2]);
+%         h1 = plot(l,coordU(2,:),'k--','LineWidth',2); h2 = plot(l,coordL(2,:),'k--','LineWidth',2);
+%         title(['Example Nominal Airfoil Shape',' & Pert i = ',num2str(i)])
+%         pause(0.25); delete([h1,h2]);
     else
         NF = NF + 1;
         scatter([l,l],[coordU(2,:), coordL(2,:)],'r.'); axis equal;
