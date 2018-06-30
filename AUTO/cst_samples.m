@@ -19,7 +19,7 @@ title 'Example Nominal Airfoil Shape'
 
 %% Random Perturbation from Hypercube
 % Sample uniform hypercube:
-N = 250; rng(47);
+N = 1000; rng(47);
 
 % Define upper and lower bounds
 pct = 0.2;

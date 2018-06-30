@@ -13,7 +13,7 @@ m = size(X,2);
 
 %% Read SU2 data files
 % pick QoI
-QOI = 3; % QOI = 1: CL/CD, QOI = 2: CL, QOI = 3: CD 
+QOI = 2; % QOI = 1: CL/CD, QOI = 2: CL, QOI = 3: CD 
 % read force data
 F = readsu2_forces(dir('./forces'),QOI);
 
@@ -54,14 +54,14 @@ for i=1:N
 %     text(X(I(:,i),:)*w,F(I(:,i)),num2str(I(:,i)));
     for ii=1:TT
         % generate refined airfoil over sweep
-        [coordU,coordL] = CST_airfoil(l',XX0(ii,1:m/2),XX0(ii,m/2+1:m),0);
+        [coordU,coordL] = cst_airfoil(l',XX0(ii,1:m/2),XX0(ii,m/2+1:m),0);
         % sweep plot
-        subplot(2,1,1), h1 = scatter(XX(ii,:)*w,ppval(spl,XX(ii,:)*w),50,'filled','r');
+        figure(fig4); subplot(2,1,1), h1 = scatter(XX(ii,:)*w,ppval(spl,XX(ii,:)*w),50,'filled','r');
         % nozzle plots
-        subplot(2,1,2), h2 = plot(l,coordU(2,:),'b','LineWidth',2); hold on; 
-        subplot(2,1,2), h3 = plot(l,coordL(2,:),'b','LineWidth',2); axis equal;        
+        figure(fig4); subplot(2,1,2), h2 = plot(l,coordU(2,:),'b','LineWidth',2); hold on; 
+        figure(fig4); subplot(2,1,2), h3 = plot(l,coordL(2,:),'b','LineWidth',2); axis equal;        
         % build gif
-        frame = getframe(fig4);
+        figure(fig4); frame = getframe(fig4);
         [A,map] = rgb2ind(frame2im(frame),256);
         if i*ii == 1
             imwrite(A,map,filename,'gif','LoopCount',Inf,'DelayTime',0.1);
@@ -69,7 +69,7 @@ for i=1:N
             imwrite(A,map,filename,'gif','WriteMode','append','DelayTime',0.1);
         end
         % delete plots
-        delete([h1,h2,h3]);
+%         delete([h1,h2,h3]);
     end
 end
 % string for legend
