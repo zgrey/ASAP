@@ -7,7 +7,6 @@ function [F, N, I, Fmax, Fmin, Imax, Imin] = readsu2_forces(dir_str,QOI)
 
 % determine number of runs (should be consistent with designs_*.mat params
 N = size(dir_str,1)-2;
-disp('READING FORCES DATA...');
 % precondition vectors
 F = zeros(N,1); I = zeros(N,1);
 for i=1:N
@@ -16,12 +15,15 @@ for i=1:N
     
     if QOI == 1
         % Lift over Drag
+        if i==1, disp('READING LIFT/DRAG DATA...'); end
         !grep 'Total CL/CD:'  dummy.dat > grepdummy.dat
     elseif QOI == 2
         % Lift
+        if i==1, disp('READING LIFT DATA...'); end
         !grep 'Total CL:'  dummy.dat > grepdummy.dat
     elseif QOI == 3
         % Drag
+        if i==1, disp('READING DRAG DATA...'); end
         !grep 'Total CD:'  dummy.dat > grepdummy.dat
     end
     

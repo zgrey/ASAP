@@ -57,7 +57,7 @@ for i=1:N
         [coordU,coordL] = cst_airfoil(l',XX0(ii,1:m/2),XX0(ii,m/2+1:m),0);
         % sweep plot
         figure(fig4); subplot(2,1,1), h1 = scatter(XX(ii,:)*w,ppval(spl,XX(ii,:)*w),50,'filled','r');
-        % nozzle plots
+        % airfoil plots
         figure(fig4); subplot(2,1,2), h2 = plot(l,coordU(2,:),'b','LineWidth',2); hold on; 
         figure(fig4); subplot(2,1,2), h3 = plot(l,coordL(2,:),'b','LineWidth',2); %axis equal;        
         fig4.CurrentAxes.Visible = 'off';

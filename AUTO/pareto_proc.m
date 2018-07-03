@@ -1,21 +1,18 @@
 % Pareto processing routines
+clc; clearvars;
 %% Load AS Matlab Environment
-addpath '~/RESEARCH/active_subspaces/matlab/'
-addpath '~/RESEARCH/active_subspaces/matlab/Subspaces'
-addpath '~/RESEARCH/active_subspaces/matlab/ResponseSurfaces'
-addpath '~/RESEARCH/active_subspaces/matlab/Plotters'
-warning('off','MATLAB:dispatcher:pathWarning')
-addpath './paretopoints'
+% Assign your custom active_subspaces home directory
+AS_HOME = '~/active_subspaces';
+addpath([AS_HOME,'/matlab/']);
+addpath([AS_HOME,'/matlab/Subspaces']);
+addpath([AS_HOME,'/matlab/ResponseSurfaces']);
+addpath([AS_HOME,'/active_subspaces/matlab/Plotters']);
+warning('off','MATLAB:dispatcher:pathWarning');
+addpath './paretopoints';
 
 %% Load designs workspace
 disp('LOADING designs.mat...')
-if exist('designs.mat','file')
-    load('designs.mat');
-else
-    disp('ERROR: designs.mat was not found')
-    return
-end
-
+load('designs.mat');
 % Check for consitency from designs.mat
 if sum(IP) ~= N
     disp('WARNING: Total evaluations does not match initial number of feasible designs')
@@ -29,12 +26,15 @@ dir_str = dir('./forces');
 %% Compute drag subspace
 AS.sub = compute(X,CD.F,[],[],6,0,0);
 AS.X   = X;
+% Assign two dimensional subspace
 if size(AS.sub.W1,2) < 2
     AS.sub.W1 = [AS.sub.W1, AS.sub.W2(:,1)];
 elseif size(AS.sub.W1,2) > 2
     AS.sub.W1 = AS.sub.W1(:,1:2);
 end
+% Project to active subspace
 Y      = AS.X*AS.sub.W1;
+% Assign subspace
 CD.W   = AS.sub.W1; CL.W = AS.sub.W1;
 
 %% Compute pareto
@@ -47,10 +47,8 @@ CD.y = AS.X(CD.I,:)*AS.sub.W1; CL.y = AS.X(CL.I,:)*AS.sub.W1;
 
 %% Lift summary
 AS.F = CL.F;
-
 % Summary plot
-opts.ylabel = 'QoI';
-opts.markersize = 30;
+opts.title = 'Lift Summary'; opts.ylabel = 'QoI'; opts.markersize = 30;
 sufficient_summary(AS.X*AS.sub.W1,AS.F,opts);
 hold on; scatter(Yk(:,1),Yk(:,2),200,'k.');
 scatter(CL.y(1), CL.y(2),100,'r','filled');
@@ -59,10 +57,8 @@ grid off; axis equal;
 
 %% Drag summary
 AS.F = CD.F;
-
 % Summary plot
-opts.ylabel = 'QoI';
-opts.markersize = 30;
+opts.title = 'Drag Summary'; opts.ylabel = 'QoI'; opts.markersize = 30;
 sufficient_summary(AS.X*AS.sub.W1,AS.F,opts);
 hold on; scatter(Yk(:,1),Yk(:,2),200,'k.');
 scatter(CD.y(1), CD.y(2),100,'r','filled');
@@ -94,6 +90,6 @@ CD.coef = poly_train(AS.X*AS.sub.W1,CD.F,CD.q);
 CL.coef = poly_train(AS.X*AS.sub.W1,CL.F,CL.q);
 CD.P = poly_predict(p,CD.coef,CD.q);
 CL.P = poly_predict(p,CL.coef,CL.q);
-
-plot(CD.P,CL.P,'Linewidth',2,'color',[0,0.447,0.741]); hold on
+figure;
+plot(CD.P,CL.P,'Linewidth',2,'color',[0,0.447,0.741]); hold on;
 scatter(Pk(:,1),-Pk(:,2),'k.');

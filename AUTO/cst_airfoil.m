@@ -7,12 +7,15 @@ function [coordU, coordL] = cst_airfoil(l,bl,bu,dt)
 
 % check dimensions of input vectors
 if size(l,2) > size(l,1)
+    % reassign as column vector
     l = l';
 end
 if size(bu,2) > size(bu,1)
+    % reassign as column vector
     bu = bu';
 end
 if size(bl,2) > size(bl,1)
+    % reassign as column vector
     bl = bl';
 end
 
