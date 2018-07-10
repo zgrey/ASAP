@@ -86,4 +86,4 @@ end
 
 
 %% Save computations
-save(['./subspaces/AS_QOI',num2str(QOI),'.mat']);
+save(['./subspaces/AS_m',num2str(m),'_N',num2str(N),'_pm',num2str(pct*100),'pct_',QOI',num2str(QOI),'.mat']);

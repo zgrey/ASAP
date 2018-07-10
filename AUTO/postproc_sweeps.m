@@ -24,7 +24,7 @@ TT = 25; tt = linspace(0,1,TT);
 % Index set (columns are sweep indices, rows are point indices in sweep)
 I = reshape(linspace(1,N*T,N*T)',T,N);
 fig1 = figure; hold on; fig2 = figure; hold on; fig3 = figure; hold on; fig4 = figure; hold on;  
-filename = ['./sweeps/sweeps_m',num2str(m),'_N',num2str(N*T),'_QoI',num2str(QOI),'.gif'];
+filename = ['./sweeps/sweeps_m',num2str(m),'_N',num2str(N*T),'_pm',num2str(pct*100),'pct','.gif'];
 for i=1:N
     % Euclidean distance
     d = cumsum([0; sqrt(sum((X(I(2:end,i),:)-X(I(1:end-1,i),:)).^2,2))]);

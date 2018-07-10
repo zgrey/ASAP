@@ -77,4 +77,4 @@ for i=1:( (N*T)-NF )
     
 end
 %% Save sweeps workspace
-save(['./sweeps/','sweeps_m',num2str(m),'_N',num2str(N*T),'_pm',num2str(pct*100),'pct.mat'],'X','X0','NF','IP','lb0','ub0','l','max_thk','I_maxthk','L1','N','T','t');
+save(['./sweeps/','sweeps_m',num2str(m),'_N',num2str(N*T),'_pm',num2str(pct*100),'pct.mat'],'X','X0','NF','IP','lb0','ub0','l','max_thk','I_maxthk','L1','N','T','t','pct');
