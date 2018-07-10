@@ -24,7 +24,7 @@ TT = 25; tt = linspace(0,1,TT);
 % Index set (columns are sweep indices, rows are point indices in sweep)
 I = reshape(linspace(1,N*T,N*T)',T,N);
 fig1 = figure; hold on; fig2 = figure; hold on; fig3 = figure; hold on; fig4 = figure; hold on;  
-filename = ['./sweeps/sweeps_m',num2str(m),'_N',num2str(N*T),'_pm',num2str(pct*100),'pct','.gif'];
+filename = ['./sweeps/sweeps_m',num2str(m),'_N',num2str(N*T),'_pm',num2str(pct*100),'pct_','QOI',num2str(QOI),'.gif'];
 for i=1:N
     % Euclidean distance
     d = cumsum([0; sqrt(sum((X(I(2:end,i),:)-X(I(1:end-1,i),:)).^2,2))]);
@@ -59,7 +59,7 @@ for i=1:N
         figure(fig4); subplot(2,1,1), h1 = scatter(XX(ii,:)*w,ppval(spl,XX(ii,:)*w),50,'filled','r');
         % airfoil plots
         figure(fig4); subplot(2,1,2), h2 = plot(l,coordU(2,:),'b','LineWidth',2); hold on; 
-        figure(fig4); subplot(2,1,2), h3 = plot(l,coordL(2,:),'b','LineWidth',2); %axis equal;        
+        figure(fig4); subplot(2,1,2), h3 = plot(l,coordL(2,:),'b','LineWidth',2); axis equal;        
         fig4.CurrentAxes.Visible = 'off';
         % build gif
         figure(fig4); frame = getframe(fig4);
