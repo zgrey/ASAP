@@ -76,4 +76,4 @@ for i=1:N-NF
     
 end
 %% Save design workspace
-save(['./designs/','designs_m',num2str(m),'_N',num2str(N),'_pm',num2str(pct*100),'pct.mat'],'X','X0','NF','IP','lb0','ub0','l','max_thk','I_maxthk','L1','pct','N');
+save(['./designs/','designs_m',num2str(m),'_N',num2str(N),'_pm',num2str(pct*100),'pct.mat'],'X','X0','NF','IP','lb0','ub0','l','max_thk','I_maxthk','L1','pct','N','m');
