@@ -33,7 +33,7 @@ ub0(m/2+1:m) = (1+pct)*dv(m/2+1:end); lb0(m/2+1:m) = (1-pct)*dv(m/2+1:end);
 % random samples from [-1,1] hypercube
 X = 2*rand(2*N,m) - 1;
 % normalize by sup-norm to scale to boundary
-X = X./repmat(max(abs(X),[],2),1,m); k = randperm(2*N);
+X = X./repmat(max(abs(X),[],2),1,m);
 % build convex combinations
 X  = kron(X(1:N,:)',(1-t))' + kron(X(N+1:end,:)',t)';
 X0 = bsxfun(@plus,lb0,bsxfun(@times,ub0-lb0,0.5*(X+1)));
