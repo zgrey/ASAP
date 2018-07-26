@@ -23,22 +23,28 @@ end
 
 %% Random Perturbation from Hypercube
 % Sample uniform hypercube:
-N = 1000; rng(47);
-
+N = 8000; rng(47);
+% check for sufficient number of samples
+if N < nchoosek(m-2,2)
+    disp('WARNING: Number of samples is less than the number required for a quadratic fit');
+end
 % Define upper and lower bounds
 pct = 0.6;
 % lower surface
-lb0(1:m/2) = (1+pct)*dv(1:m/2)'; ub0(1:m/2) = (1-pct)*dv(1:m/2);
+lb0(1:m/2) = (1+pct)*dv(1:m/2); ub0(1:m/2) = (1-pct)*dv(1:m/2);
 % upper surface
-ub0(m/2+1:m) = (1+pct)*dv(m/2+1:end)'; lb0(m/2+1:m) = (1-pct)*dv(m/2+1:end);
+ub0(m/2+1:m) = (1+pct)*dv(m/2+1:end); lb0(m/2+1:m) = (1-pct)*dv(m/2+1:end);
 
-% print bounds
+% print bounds for m=10
+if m==10
 disp('----- Parameter Bounds -----')
 disp(['Param.', '   ','lb','      ', 'ub']);
 disp([['a1 ';'a2 ';'a3 ';'a4 ';'a5 ';'a6 ';'a7 ';'a8 ';'a9 ';'a10',], ...
     [' ';' ';' ';' ';' ';' ';' ';' ';' ';' '],num2str(lb0'), ...
     [' ';' ';' ';' ';' ';' ';' ';' ';' ';' '],num2str(ub0')]);
+end
 
+% random hypercube samples
 X = 2*rand(N,length(dv))-1;
 X0 = bsxfun(@plus,lb0,bsxfun(@times,ub0-lb0,0.5*(X+1)));
 
