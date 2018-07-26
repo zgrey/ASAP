@@ -1,28 +1,32 @@
 %% A wrapper script for generating CST airfoil samples and SU2 meshes
 close all; clearvars;
+% a flag for visualizing the airfoil perturbations 0 plots off, 1 plots on
+plt_flg = 0;
 
 %% discretize airfoil domain
 nl = 250; l = [linspace(0,0.005,50),linspace(0.005+.005/50,1,nl)];
 
 %% Generate Example Nominal (fit to NACA 0012)
 % number of parameters (even number)
-m = 10;
+m = 100;
 % dv(1:m/2) correspond to lower surface coefficients, dv(m/2+1:m) are upper surface coefficients
 % optimize to find nominal values
 dv = fminunc(@(dv) coord_obj(l,dv), [-0.2*ones(1,m/2), 0.2*ones(1,m/2)]);
 % compute coordinates for optimal coefficients
 [coordU0, coordL0] = cst_airfoil(l',dv(1:m/2)',dv(m/2+1:end)',0);
 % plot Nominal Airfoil
-% plot(l,coordU0(2,:),'b','LineWidth',2,'color',0.75*ones(3,1)); hold on;
-% plot(l,coordL0(2,:),'b','LineWidth',2,'color',0.75*ones(3,1)); axis equal;
-% title 'Example Nominal Airfoil Shape'
+if plt_flg == 1
+plot(l,coordU0(2,:),'b','LineWidth',2,'color',0.75*ones(3,1)); hold on;
+plot(l,coordL0(2,:),'b','LineWidth',2,'color',0.75*ones(3,1)); axis equal;
+title 'Example Nominal Airfoil Shape'
+end
 
 %% Random Perturbation from Hypercube
 % Sample uniform hypercube:
 N = 1000; rng(47);
 
 % Define upper and lower bounds
-pct = 0.2;
+pct = 0.6;
 % lower surface
 lb0(1:m/2) = (1+pct)*dv(1:m/2)'; ub0(1:m/2) = (1-pct)*dv(1:m/2);
 % upper surface
@@ -52,9 +56,11 @@ for i=1:N
     if min(coordU(2,:)-coordL(2,:)) >= -1e-3
         IP(i) = 1;
         %  verify perturbations with plots
-%         h1 = plot(l,coordU(2,:),'k--','LineWidth',2); h2 = plot(l,coordL(2,:),'k--','LineWidth',2);
-%         title(['Example Nominal Airfoil Shape',' & Pert i = ',num2str(i)])
-%         pause(0.25); delete([h1,h2]);
+        if plt_flg == 1
+        h1 = plot(l,coordU(2,:),'k--','LineWidth',2); h2 = plot(l,coordL(2,:),'k--','LineWidth',2);
+        title(['Example Nominal Airfoil Shape',' & Pert i = ',num2str(i)])
+        pause(0.25); delete([h1,h2]);
+        end
     else
         NF = NF + 1;
         scatter([l,l],[coordU(2,:), coordL(2,:)],'r.'); axis equal;
