@@ -67,6 +67,7 @@ elseif QOI == 3
 end
 % Train polynomial and predict
 [Coef, B, ~, ~, f_hat, r] = poly_train(X*W1, F, p);
+Rsqd = 1 - sum( (F - f_hat).^2)/sum( (F-mean(F)).^2 );
 NY = 50;
 
 if size(W1,2) == 1
