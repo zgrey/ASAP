@@ -13,17 +13,22 @@ m = size(X,2);
 
 %% Read SU2 data files
 % pick QoI
-QOI = 2; % QOI = 1: CL/CD, QOI = 2: CL, QOI = 3: CD 
+QOI = 3; % QOI = 1: CL/CD, QOI = 2: CL, QOI = 3: CD 
 % read force data
 F = readsu2_forces(dir('./forces'),QOI);
 
 %% Plot and visualize sweeps
 % more points over sweep for geometry visualization
 TT = 25; tt = linspace(0,1,TT);
-
+% nominal shape
+M  = diag(2./(ub0-lb0)); b = -(M*lb0' + ones(m,1));
+x0 = -inv(M)*b; [coordU0,coordL0] = cst_airfoil(l',x0(1:m/2),x0(m/2+1:m),0);
 % Index set (columns are sweep indices, rows are point indices in sweep)
 I = reshape(linspace(1,N*T,N*T)',T,N);
-fig1 = figure; hold on; fig2 = figure; hold on; fig3 = figure; hold on; fig4 = figure; hold on;  
+fig1 = figure; hold on; fig2 = figure; hold on; fig3 = figure; hold on; fig4 = figure; hold on;
+% plot nominal shape
+figure(fig4); subplot(2,1,2), plot(l,coordU0(2,:),'--','LineWidth',2,'color',0.5*ones(3,1)); hold on; axis equal;
+ax = subplot(2,1,2); plot(l,coordL0(2,:),'--','LineWidth',2,'color',0.5*ones(3,1));
 filename = ['./sweeps/sweeps_m',num2str(m),'_N',num2str(N*T),'_pm',num2str(pct*100),'pct_','QOI',num2str(QOI),'.gif'];
 for i=1:N
     % Euclidean distance
@@ -59,7 +64,7 @@ for i=1:N
         figure(fig4); subplot(2,1,1), h1 = scatter(XX(ii,:)*w,ppval(spl,XX(ii,:)*w),50,'filled','r');
         % airfoil plots
         figure(fig4); subplot(2,1,2), h2 = plot(l,coordU(2,:),'b','LineWidth',2); hold on; 
-        figure(fig4); subplot(2,1,2), h3 = plot(l,coordL(2,:),'b','LineWidth',2); axis equal;        
+        figure(fig4); subplot(2,1,2), h3 = plot(l,coordL(2,:),'b','LineWidth',2); axis([ax.XLim, ax.YLim]);        
         fig4.CurrentAxes.Visible = 'off';
         % build gif
         figure(fig4); frame = getframe(fig4);
