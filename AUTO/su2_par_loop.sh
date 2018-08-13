@@ -1,9 +1,9 @@
 #!/bin/bash
 
-
+read -p "WARNING: This process will delete mesh files. Press [Enter] to continue... Press [Ctl+c] to quit, then backup the mesh files manually..."
 cd ./meshes
 
-for i in $( ls ); do
+for i in $( ls ./*.su2); do
 	echo item: $i
 	if [ -f ../airfoil.su2 ];
 	then
@@ -25,6 +25,8 @@ for i in $( ls ); do
 
 	# Copy Results	
 	cp forces_breakdown.dat ./forces/$i.dat
-	cp flow.vtk ./flows/$i.vtk
+	# cp flow.vtk ./flows/$i.vtk
 	cd ./meshes
+        # remove previous mesh in case of restart
+	rm $i
 done
