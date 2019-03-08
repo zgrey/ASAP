@@ -11,7 +11,7 @@ warning('off','MATLAB:dispatcher:pathWarning')
 
 %% Read SU2 data files
 % pick QoI
-QOI = 3; % CL/CD QOI = 1, CL QOI = 2, CD QOI = 3 
+QOI = 2; % CL/CD QOI = 1, CL QOI = 2, CD QOI = 3 
 % read force data
 [F, N, I, Fmax, Fmin, Imax, Imin] = readsu2_forces(dir('./forces'),QOI);
 
