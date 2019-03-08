@@ -8,7 +8,7 @@ nl = 250; l = [linspace(0,0.005,50),linspace(0.005+.005/50,1,nl)];
 
 %% Generate Example Nominal (fit to NACA 0012)
 % number of parameters (even number)
-m = 100;
+m = 20;
 % dv(1:m/2) correspond to lower surface coefficients, dv(m/2+1:m) are upper surface coefficients
 % optimize to find nominal values
 dv = fminunc(@(dv) coord_obj(l,dv), [-0.2*ones(1,m/2), 0.2*ones(1,m/2)]);
@@ -23,7 +23,7 @@ end
 
 %% Random Perturbation from Hypercube
 % Sample uniform hypercube:
-N = 8000; rng(47);
+N = 1; rng(47);
 % check for sufficient number of samples
 if N < nchoosek(m-2,2)
     disp('WARNING: Number of samples is less than the number required for a quadratic fit');
