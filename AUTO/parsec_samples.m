@@ -98,7 +98,7 @@ for i=1:N-NF
     coordU = [l;fhU'];
     coordL = [l;-fhL'];
     
-    mesh_coords(coordU,coordL,i,NN,NF);
+    mesh_coords(coordU,coordL,i,N,NF);
     
 end
 
