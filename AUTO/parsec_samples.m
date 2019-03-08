@@ -4,7 +4,7 @@ addpath './parsec'
 
 % Mesh
 np = 250;
-x = [linspace(0,0.005,50),linspace(0.005+.005/50,1,np)];
+l = [linspace(0,0.005,50),linspace(0.005+.005/50,1,np)];
 
 %% Generate Example Nominal
 % Input is a vector of PARSEC parameters p=[p1, p2, ...pn] where dv=p s.t.
@@ -21,33 +21,34 @@ x = [linspace(0,0.005,50),linspace(0.005+.005/50,1,np)];
 % p11=beta te
 % NACA 0012  from Sean Wu (WRONG)
 dv  = [0.0146,0.3025,0.06,-0.4928,0.3016,0.06,-0.4848,0,0,-2.7791,9.2496];
-
+m =length(dv) - 2;
 % Sharp Trailing Edge
 % dv  = [0.0146,0.3025,0.06,-0.4928,0.3016,0.06,-0.4848,0,0,-2.7791,9.2496];
 
 a  = parsec(dv);
-bf = zeros(length(x),6);
+bf = zeros(length(l),6);
 for i = 1:6
-    bf(:,i) = (x').^(i-1/2);
+    bf(:,i) = (l').^(i-1/2);
 end
 
 %% Plot Nominal Airfoil
-plot(x',bf*a(1:6),'LineWidth',4)
-hold on
-plot(x',-bf*a(7:end),'LineWidth',4)
-axis equal
+% plot(l',bf*a(1:6),'LineWidth',4)
+% hold on
+% plot(l',-bf*a(7:end),'LineWidth',4)
+% axis equal
 
 %% Random Perturbation from Hypercube
 % Sample uniformly from box constraints in 2*N+2 dimensions
-NN = 1000;
+N = 1000;
 % rng(43); % Used for 500 Sample Designs
 rng(44); % Used for 1000 Sample Designs
 % rng(45); % Used for 5000 Sample Designs
 
 % Define Reasonable upper and lower bounds
-lb0    = 0.8*[dv(1:7),dv(10:end)];
+pct = 0.2;
+lb0    = (1-pct)*[dv(1:7),dv(10:end)];
 % lb0(2) = 0.2;
-ub0    = 1.2*[dv(1:7),dv(10:end)];
+ub0    = (1+pct)*[dv(1:7),dv(10:end)];
 % ub0(2) = 0.6;
 
 %disp('----- Parameter Bounds -----')
@@ -56,14 +57,14 @@ ub0    = 1.2*[dv(1:7),dv(10:end)];
 %    [' ';' ';' ';' ';' ';' ';' ';' ';' ';' ';' '],num2str(lb0'), ...
 %    [' ';' ';' ';' ';' ';' ';' ';' ';' ';' ';' '],num2str(ub0')]);
 
-X = 2*rand(NN,length(dv)-2)-1;
+X = 2*rand(N,length(dv)-2)-1;
 % X = [XC1';XC2';XC3';XC4'];
 X0 = bsxfun(@plus,lb0,bsxfun(@times,ub0-lb0,0.5*(X+1)));
 
 % Sample from constraint polytope
 NF = 0;
-IP = zeros(NN,1);
-for i=1:NN
+IP = zeros(N,1);
+for i=1:N
     % Evaluate PARSEC
     a = parsec([X0(i,1:7),0,0,X0(i,8:end)]');
     fhU = bf*a(1:6);
@@ -84,16 +85,18 @@ X  =  X(IP,:);
 X0 =  X0(IP,:);
 
 %% Generate Meshes
-for i=1:NN-NF
+for i=1:N-NF
     
     % Evaluate PARSEC
     a = parsec([X0(i,1:7),0,0,X0(i,8:end)]');
     fhU = bf*a(1:6);
     fhL = bf*a(7:end);
-    coordU = [x;fhU'];
-    coordL = [x;-fhL'];
+    coordU = [l;fhU'];
+    coordL = [l;-fhL'];
     
-    mesh_coords(coordU,coordL,i,NN,NF);
+%     mesh_coords(coordU,coordL,i,NN,NF);
     
 end
-save('designs.mat','X','X0','NF','IP','lb0','ub0','bf','x')
+
+%% Save design workspace
+save(['./designs/','PARSEC_designs_m',num2str(m),'_N',num2str(N),'_pm',num2str(pct*100),'pct.mat'],'X','X0','NF','IP','lb0','ub0','l','pct','N','m');
