@@ -1,6 +1,5 @@
-close all;
-clear all;
-addpath './parsec'
+close all; clearvars;
+plt_flg = 0;
 
 % Mesh
 np = 250;
@@ -32,10 +31,11 @@ for i = 1:6
 end
 
 %% Plot Nominal Airfoil
-% plot(l',bf*a(1:6),'LineWidth',4)
-% hold on
-% plot(l',-bf*a(7:end),'LineWidth',4)
-% axis equal
+if plt_flg == 1
+    plot(l',bf*a(1:6),'LineWidth',4); hold on
+    plot(l',-bf*a(7:end),'LineWidth',4)
+    axis equal;
+end
 
 %% Random Perturbation from Hypercube
 % Sample uniformly from box constraints in 2*N+2 dimensions
@@ -67,12 +67,16 @@ IP = zeros(N,1);
 for i=1:N
     % Evaluate PARSEC
     a = parsec([X0(i,1:7),0,0,X0(i,8:end)]');
-    fhU = bf*a(1:6);
-    fhL = -bf*a(7:end);
+    fhU = bf*a(1:6); coordU = [l; fhU']; 
+    fhL = -bf*a(7:end); coordL = [l; fhL'];
     if min(fhU-fhL) >= -1e-3
         IP(i) = 1;
-%         plot(x,fhU,'k--');
-%         plot(x,fhL,'k--');
+        %  verify perturbations with plots
+        if plt_flg == 1
+        h1 = plot(l,coordU(2,:),'k--','LineWidth',2); hold on; h2 = plot(l,coordL(2,:),'k--','LineWidth',2);
+        title(['Example Nominal Airfoil Shape',' & Pert i = ',num2str(i)])
+        pause(0.25); delete([h1,h2]);
+        end
     else
         NF = NF + 1;
     end
@@ -94,7 +98,7 @@ for i=1:N-NF
     coordU = [l;fhU'];
     coordL = [l;-fhL'];
     
-%     mesh_coords(coordU,coordL,i,NN,NF);
+    mesh_coords(coordU,coordL,i,N,NF);
     
 end
 
